@@ -4,15 +4,7 @@
 *:not(dialog) {
     margin: 0;
 }
-:root {
-    --lightpink: #f57caa;
-    --pink: #dd7fbe;
-    --darkpink: #c556a4;
-    --outlinePink: #c93aa5;
-    --white: #f1f1f1;
-    --whitish: #ebe8e8;
-    --gray: #2e2e2e;
-}
+
 @media (prefers-reduced-motion: no-preference) {
     html {
     interpolate-size: allow-keywords;
@@ -37,9 +29,28 @@ p {
 h1, h2, h3, h4, h5, h6 {
     text-wrap: balance;
 }
-
-/* Todo List Default */
 html {
     height: 100vh;
 }
 
+
+
+/* Utility CSS */
+.hidden {
+    display: none !important;
+}
+
+/* Buttons and Forms */
+.mainBtns {
+    margin: 1rem 0 5rem 1rem;
+}
+
+.userForms {
+    margin-left: 1rem;
+}
+
+#createForm, #loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
