@@ -3,9 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script type="module" src="../static/js/main.js"></script>
+    <title>Signup-Sigin</title>
 </head>
 <body>
-    
+    <main>
+        <div class="mainBtns">
+            <button type="button" class="mainBtn" id="createButton">Create Account</button>
+            <button type="button" class="mainBtn" id="loginButton">Login to Account</button>
+        </div>
+        <div class="mainForms">
+            <form action="" class="userForms hidden" id="createForm">
+                <div class="formContainer">
+                    <div>
+                        <label for="createUsername">Username:</label>
+                        <input type="text" name="createUsername" id="createUsername" placeholder="e.g., JSmith" required>
+                    </div>
+                    <p class="createAccReminders">Username must contain at least (3) characters and (30) at maximum and no special characters.</p>
+                </div>
+                <div>
+                    <label for="createEmail">Email:</label>
+                    <input type="email" name="createEmail" id="createEmail" placeholder="e.g., johnsmith@hotmail.com" required>
+                </div>
+                <div class="formContainer">
+                    <div>
+                        <label for="createPassword">Password:</label>
+                        <input type="password" name="createPassword" id="createPassword" placeholder="********" required>
+                    </div>
+                    <p class="createAccReminders">Password must contain at least (8) characters, a number, and an uppercase and lowercase letter.</p>
+                </div>
+                <button type="submit" id="submitCreateAcc">CREATE</button>
+            </form>
+            <form action="" class="userForms hidden" id="loginForm">
+                <div>
+                    <label for="loginIdentifier">Username / Email:</label>                
+                    <input type="text" name="loginIdentifier" id="loginIdentifier">
+                </div>
+                <div>
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" name="loginPassword" id="loginPassword">
+                </div>
+                <button type="submit" id="submitLoginAcc">LOG IN</button>
+            </form>
+        </div>
+    </main>
 </body>
 </html>

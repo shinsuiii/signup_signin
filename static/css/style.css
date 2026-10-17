@@ -49,8 +49,25 @@ html {
     margin-left: 1rem;
 }
 
+.formContainer {
+    display: flex;
+    gap: 2rem;
+}
+
 #createForm, #loginForm {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+}
+
+#createForm input {
+    width: 400px;
+}
+
+.createAccReminders {
+    color: red;
+}
+
+#submitCreateAcc, #submitLoginAcc {
+    width: 20rem;
 }

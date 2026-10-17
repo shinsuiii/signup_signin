@@ -1,5 +1,6 @@
 import {
-    createButton, createForm, loginButton, loginForm,
+    createForm, loginForm,
+    createButton, submitCreateAcc, loginButton, submitLoginAcc
 } from './variables.js'
 
 import { 
@@ -19,5 +20,7 @@ export function interactions() {
             createForm.classList.add("hidden")
         } else loginForm.classList.add("hidden")
     })
+    
+    submitCreateAcc.addEventListener('click', createAccount)
 }
 

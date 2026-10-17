@@ -14,3 +14,8 @@ export const createEmail = document.getElementById('createEmail')
 export const createPassword = document.getElementById('createPassword')
 export const loginIdentifier = document.getElementById('loginIdentifier')
 export const loginPassword = document.getElementById('loginPassword')
+
+// Regex
+export const regexUsername = /^[a-zA-Z0-9_ ]{3,30}$/
+export const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+export const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/
