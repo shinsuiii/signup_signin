@@ -13,7 +13,11 @@ export async function createAccount(event) {
     
     const userInfo = [createUsername, createEmail, createPassword]
     for (const info of userInfo) {
-        if (!fieldCheck(info.type, info.value)) return
+        if (!fieldCheck(info.type, info.value)) {
+            alert(`${info.type} DOES NOT FOLLOW THE CONVENTIONS`)
+            submitCreateAcc.disabled = false
+            return
+        }
     }
 
     const [userExists, emailExists] = await Promise.all([
@@ -44,7 +48,7 @@ function fieldCheck(dataType, value) {
 
 async function checkAccExists(identifier) {
     const params = new URLSearchParams({identifier})
-    const response = await fetch(`${BASE_URL}/signup/users${params.toString()}`)
+    const response = await fetch(`${BASE_URL}/signup/users?${params.toString()}`)
     return await response.json()
 }
 

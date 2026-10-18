@@ -22,5 +22,6 @@ export function interactions() {
     })
     
     submitCreateAcc.addEventListener('click', createAccount)
+    // submitLoginAcc.addEventListener('click', loginAccount)
 }
 

@@ -1,15 +1,13 @@
 from pydantic import BaseModel
-from fastapi import FastAPI, Request, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
-
+from fastapi.security import OAuth2PasswordBearer
+from database.signup import get_user, generate_user
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-
 
 
 @app.get("/")
@@ -22,12 +20,10 @@ class SignUp(BaseModel):
     email: str
     password: str
 
-
-
 @app.get("/signup/users")
 def check_user_exists(identifier: str):
-    return
+    return get_user(identifier)
 
 @app.post("/signup/users")
 def create_user(user_info: SignUp):
-    return 
+    return generate_user(user_info)
