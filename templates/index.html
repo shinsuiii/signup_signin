@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/style.css">
     <script type="module" src="../static/js/main.js"></script>
-    <title>Signup-Sigin</title>
+    <title>Signup-Signin</title>
 </head>
 <body>
     <main>
@@ -20,21 +20,32 @@
                         <label for="createUsername">Username:</label>
                         <input type="text" name="createUsername" id="createUsername" placeholder="e.g., JSmith" required>
                     </div>
-                    <p class="createAccReminders">Username must contain at least (3) characters and (30) at maximum and no special characters.</p>
+                    <p class="createAccReminders hidden" id="createUsernameWarning">Username must contain at least (3) characters and (30) at maximum and no special characters.</p>
                 </div>
-                <div>
-                    <label for="createEmail">Email:</label>
-                    <input type="email" name="createEmail" id="createEmail" placeholder="e.g., johnsmith@hotmail.com" required>
+                <div class="formContainer">
+                    <div>
+                        <label for="createEmail">Email:</label>
+                        <input type="email" name="createEmail" id="createEmail" placeholder="e.g., johnsmith@hotmail.com" required>
+                    </div>
+                    <p class="createAccReminders hidden" id="createEmailWarning">Please write a valid email account.</p>
                 </div>
                 <div class="formContainer">
                     <div>
                         <label for="createPassword">Password:</label>
                         <input type="password" name="createPassword" id="createPassword" placeholder="********" required>
                     </div>
-                    <p class="createAccReminders">Password must contain at least (8) characters, a number, and an uppercase and lowercase letter.</p>
+                    <p class="createAccReminders hidden" id="createPasswordWarning">Password must contain at least (8) characters, a number, and an uppercase and lowercase letter.</p>
+                </div>
+                <div class="formContainer">
+                    <div>
+                        <label for="createPasswordConfirm">Re-type Password:</label>
+                        <input type="password" name="createPasswordConfirm" id="createPasswordConfirm" placeholder="********" required>
+                    </div>
+                    <p class="createAccReminders hidden" id="createPasswordConfirmWarning">Passwords must match to confirm.</p>
                 </div>
                 <button type="submit" id="submitCreateAcc">CREATE</button>
             </form>
+
             <form action="" class="userForms hidden" id="loginForm">
                 <div>
                     <label for="loginIdentifier">Username / Email:</label>                
@@ -44,7 +55,7 @@
                     <label for="loginPassword">Password:</label>
                     <input type="password" name="loginPassword" id="loginPassword">
                 </div>
-                <button type="submit" id="submitLoginAcc">LOG IN</button>
+            <button type="submit" id="submitLoginAcc">LOG IN</button>
             </form>
         </div>
     </main>

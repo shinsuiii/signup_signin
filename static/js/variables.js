@@ -12,8 +12,15 @@ export const loginForm = document.getElementById('loginForm')
 export const createUsername = document.getElementById('createUsername')
 export const createEmail = document.getElementById('createEmail')
 export const createPassword = document.getElementById('createPassword')
+export const createPasswordConfirm = document.getElementById('createPasswordConfirm')
 export const loginIdentifier = document.getElementById('loginIdentifier')
 export const loginPassword = document.getElementById('loginPassword')
+
+// Warning
+export const createUsernameWarning = document.getElementById('createUsernameWarning')
+export const createEmailWarning = document.getElementById('createEmailWarning')
+export const createPasswordWarning = document.getElementById('createPasswordWarning')
+export const createPasswordConfirmWarning = document.getElementById('createPasswordConfirmWarning')
 
 // Regex
 export const regexUsername = /^[a-zA-Z0-9_ ]{3,30}$/

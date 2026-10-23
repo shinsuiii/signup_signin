@@ -1,7 +1,8 @@
 import {
     submitCreateAcc, submitLoginAcc,
-    createUsername, createEmail, createPassword, loginIdentifier, loginPassword,
-    regexUsername, regexEmail, regexPassword
+    createUsername, createEmail, createPassword, createPasswordConfirm, loginIdentifier, loginPassword,
+    createUsernameWarning, createEmailWarning, createPasswordWarning, createPasswordConfirmWarning,
+    regexUsername, regexEmail, regexPassword,
 } from './variables.js'
 
 const BASE_URL = 'http://127.0.0.1:8000'
@@ -15,9 +16,16 @@ export async function createAccount(event) {
     for (const info of userInfo) {
         if (!fieldCheck(info.type, info.value)) {
             alert(`${info.type} DOES NOT FOLLOW THE CONVENTIONS`)
+            fieldWarning(info.type)
             submitCreateAcc.disabled = false
             return
         }
+    }
+    if (createPassword.value !== createPasswordConfirm.value) {
+        alert('PASSWORDS MUST MATCH')
+        fieldWarning('passwordConfirmError')
+        submitCreateAcc.disabled = false
+        return
     }
 
     const [userExists, emailExists] = await Promise.all([
@@ -31,19 +39,35 @@ export async function createAccount(event) {
             password: createPassword.value,
         })
         alert('ACCOUNT CREATED SUCCESSFULLY!')
+        createForm.classList.add('hidden')
+        createUsernameWarning.classList.add('hidden')
+        createEmailWarning.classList.add('hidden')
+        createPasswordWarning.classList.add('hidden')
+        createPasswordConfirmWarning.classList.add('hidden')
+        createUsername.value = ''
+        createEmail.value = ''
+        createPassword.value = ''
+        createPasswordConfirm.value = ''
     }
-
     submitCreateAcc.disabled = false
 }
 
-function fieldCheck(dataType, value) {
-    if (dataType === 'text') {
+function fieldCheck(fieldType, value) {
+    if (fieldType === 'text') {
         return regexUsername.test(value)
-    } else if (dataType === 'email') {
+    } else if (fieldType === 'email') {
         return regexEmail.test(value)
-    } else {
-        return regexPassword.test(value)
-    }
+    } else return regexPassword.test(value)
+}
+
+function fieldWarning(fieldType) {
+    if (fieldType === 'text') {
+        createUsernameWarning.classList.remove('hidden')
+    } else if (fieldType === 'email') {
+        createEmailWarning.classList.remove('hidden')
+    } else if (fieldType === 'passwordConfirmError') {
+        createPasswordConfirmWarning.classList.remove('hidden')
+    } else createPasswordWarning.classList.remove('hidden')
 }
 
 async function checkAccExists(identifier) {

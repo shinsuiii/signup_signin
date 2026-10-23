@@ -1,6 +1,7 @@
 import {
     createForm, loginForm,
-    createButton, submitCreateAcc, loginButton, submitLoginAcc
+    createButton, loginButton,
+    submitCreateAcc, submitLoginAcc,
 } from './variables.js'
 
 import { 
