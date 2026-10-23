@@ -1,5 +1,6 @@
 import {
     submitCreateAcc, submitLoginAcc,
+    createForm, loginForm,
     createUsername, createEmail, createPassword, createPasswordConfirm, loginIdentifier, loginPassword,
     createUsernameWarning, createEmailWarning, createPasswordWarning, createPasswordConfirmWarning,
     regexUsername, regexEmail, regexPassword,
@@ -11,45 +12,47 @@ const BASE_URL = 'http://127.0.0.1:8000'
 export async function createAccount(event) {
     event.preventDefault()
     submitCreateAcc.disabled = true
-    
-    const userInfo = [createUsername, createEmail, createPassword]
-    for (const info of userInfo) {
-        if (!fieldCheck(info.type, info.value)) {
-            alert(`${info.type} DOES NOT FOLLOW THE CONVENTIONS`)
-            fieldWarning(info.type)
-            submitCreateAcc.disabled = false
+
+    try {
+        [createUsernameWarning, createEmailWarning, createPasswordWarning, createPasswordConfirmWarning].forEach(warning => warning.classList.add('hidden'))
+        for (const info of [createUsername, createEmail, createPassword]) {
+            if (!fieldCheck(info.type, info.value)) {
+                alert(`${info.type} DOES NOT FOLLOW THE CONVENTIONS`)
+                fieldWarning(info.type)
+                return
+            }
+        }
+        if (createPassword.value !== createPasswordConfirm.value) {
+            alert('PASSWORDS MUST MATCH')
+            fieldWarning('passwordConfirmError')
             return
         }
-    }
-    if (createPassword.value !== createPasswordConfirm.value) {
-        alert('PASSWORDS MUST MATCH')
-        fieldWarning('passwordConfirmError')
-        submitCreateAcc.disabled = false
-        return
-    }
 
-    const [userExists, emailExists] = await Promise.all([
-        checkAccExists(createUsername.value),
-        checkAccExists(createEmail.value)
-    ])
-    if (!userExists && !emailExists) {
+        const [userExists, emailExists] = await Promise.all([
+            checkAccExists(createUsername.value),
+            checkAccExists(createEmail.value)
+        ])
+        if (userExists || emailExists) {
+            alert(userExists ? 'USERNAME IS TAKEN.' : 'EMAIL IS ALREADY REGISTERED.')
+            return
+        }
+
         await createUser({
-            username: createUsername.value,
-            email: createEmail.value,
-            password: createPassword.value,
-        })
+                username: createUsername.value,
+                email: createEmail.value,
+                password: createPassword.value,
+            })
+
         alert('ACCOUNT CREATED SUCCESSFULLY!')
         createForm.classList.add('hidden')
-        createUsernameWarning.classList.add('hidden')
-        createEmailWarning.classList.add('hidden')
-        createPasswordWarning.classList.add('hidden')
-        createPasswordConfirmWarning.classList.add('hidden')
-        createUsername.value = ''
-        createEmail.value = ''
-        createPassword.value = ''
-        createPasswordConfirm.value = ''
+        createForm.reset()
+
+    } catch (error) {
+        console.error(error)
+        alert('Something went wrong. Please try again.')
+    } finally {
+        submitCreateAcc.disabled = false
     }
-    submitCreateAcc.disabled = false
 }
 
 function fieldCheck(fieldType, value) {
@@ -73,6 +76,7 @@ function fieldWarning(fieldType) {
 async function checkAccExists(identifier) {
     const params = new URLSearchParams({identifier})
     const response = await fetch(`${BASE_URL}/signup/users?${params.toString()}`)
+    if (!response.ok) throw new Error(`Check account failed: ${response.status}`)
     return await response.json()
 }
 
@@ -82,5 +86,6 @@ async function createUser(userInfo) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(userInfo)
     })
+    if (!response.ok) throw new Error(`Create account failed: ${response.status}`)
     return await response.json()
 }

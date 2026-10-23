@@ -22,7 +22,7 @@ export function interactions() {
         } else loginForm.classList.add("hidden")
     })
     
-    submitCreateAcc.addEventListener('click', createAccount)
-    // submitLoginAcc.addEventListener('click', loginAccount)
+    createForm.addEventListener('submit', createAccount)
+    // loginForm.addEventListener('submit', loginAccount)
 }
 

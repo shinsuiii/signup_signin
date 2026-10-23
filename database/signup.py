@@ -16,7 +16,7 @@ def get_user(identifier: str) -> bool:
     with psycopg.connect(connection_params, autocommit=True) as connection:
         with connection.cursor() as cursor:
             if "@" in identifier:
-                cursor.execute('SELECT EXISTS (SELECT 1 FROM users WHERE email = %(identifier)s);', {"identifier": identifier})
+                cursor.execute('SELECT EXISTS (SELECT 1 FROM users WHERE email = %(identifier)s);', {"identifier": identifier.lower()})
                 return cursor.fetchone()[0]
             else:
                 cursor.execute('SELECT EXISTS (SELECT 1 FROM users WHERE username = %(identifier)s);', {"identifier": identifier})
