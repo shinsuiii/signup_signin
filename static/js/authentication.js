@@ -14,20 +14,12 @@ export async function createAccount(event) {
     submitCreateAcc.disabled = true
 
     try {
-        [createUsernameWarning, createEmailWarning, createPasswordWarning, createPasswordConfirmWarning].forEach(warning => warning.classList.add('hidden'))
-        for (const info of [createUsername, createEmail, createPassword]) {
-            if (!fieldCheck(info.type, info.value)) {
-                alert(`${info.type} DOES NOT FOLLOW THE CONVENTIONS`)
-                fieldWarning(info.type)
-                return
-            }
-        }
-        if (createPassword.value !== createPasswordConfirm.value) {
-            alert('PASSWORDS MUST MATCH')
-            fieldWarning('passwordConfirmError')
-            return
-        }
-
+        // Checks if any warnings are present in the DOM
+        const warnings = [createUsernameWarning, createEmailWarning, createPasswordWarning, createPasswordConfirmWarning]
+        const hasWarning = warnings.some(warning => !warning.classList.contains('hidden'))
+        if (hasWarning) return
+        
+        // Checks if user exists in database
         const [userExists, emailExists] = await Promise.all([
             checkAccExists(createUsername.value),
             checkAccExists(createEmail.value)
@@ -46,7 +38,6 @@ export async function createAccount(event) {
         alert('ACCOUNT CREATED SUCCESSFULLY!')
         createForm.classList.add('hidden')
         createForm.reset()
-
     } catch (error) {
         console.error(error)
         alert('Something went wrong. Please try again.')
@@ -55,22 +46,12 @@ export async function createAccount(event) {
     }
 }
 
-function fieldCheck(fieldType, value) {
+export function fieldCheck(fieldType, value) {
     if (fieldType === 'text') {
         return regexUsername.test(value)
     } else if (fieldType === 'email') {
         return regexEmail.test(value)
     } else return regexPassword.test(value)
-}
-
-function fieldWarning(fieldType) {
-    if (fieldType === 'text') {
-        createUsernameWarning.classList.remove('hidden')
-    } else if (fieldType === 'email') {
-        createEmailWarning.classList.remove('hidden')
-    } else if (fieldType === 'passwordConfirmError') {
-        createPasswordConfirmWarning.classList.remove('hidden')
-    } else createPasswordWarning.classList.remove('hidden')
 }
 
 async function checkAccExists(identifier) {
