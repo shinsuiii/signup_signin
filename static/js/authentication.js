@@ -57,7 +57,16 @@ export function fieldCheck(fieldType, value) {
 async function checkAccExists(identifier) {
     const params = new URLSearchParams({identifier})
     const response = await fetch(`${BASE_URL}/signup/users?${params.toString()}`)
-    if (!response.ok) throw new Error(`Check account failed: ${response.status}`)
+
+    if (response.status === 422) {
+        alert('Check account failed, ensure proper credentials are met.')
+        return
+    }
+    if (!response.ok) {
+        throw new Error(`Check account failed: ${response.status}`)
+        return
+    }
+    
     return await response.json()
 }
 
@@ -67,6 +76,15 @@ async function createUser(userInfo) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(userInfo)
     })
-    if (!response.ok) throw new Error(`Create account failed: ${response.status}`)
+
+    if (response.status === 422) {
+        alert('Create account failed, ensure proper credentials are met.')
+        return
+    }
+    if (!response.ok) {
+        throw new Error(`Create account failed: ${response.status}`)
+        return
+    }
+    
     return await response.json()
 }
