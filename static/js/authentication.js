@@ -6,6 +6,7 @@ import {
     regexUsername, regexEmail, regexPassword,
 } from './variables.js'
 
+
 const BASE_URL = 'http://127.0.0.1:8000'
 
 // Create User
@@ -87,4 +88,21 @@ async function createUser(userInfo) {
     }
     
     return await response.json()
+}
+
+
+// Login User
+export async function loginAccount(event) {
+    event.preventDefault()
+    submitLoginAcc.disabled = true
+
+    try {
+        
+
+    } catch(error) {
+        console.error(error)
+        alert('Something went wrong. Please try again.')
+    } finally {
+        submitLoginAcc.disabled = false
+    }
 }

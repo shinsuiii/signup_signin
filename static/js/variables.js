@@ -23,6 +23,6 @@ export const createPasswordWarning = document.getElementById('createPasswordWarn
 export const createPasswordConfirmWarning = document.getElementById('createPasswordConfirmWarning')
 
 // Regex
-export const regexUsername = /^[A-Za-z\d@$!%*?&]{3,30}$/;
+export const regexUsername = /^[A-Za-z][A-Za-z0-9_]{2,29}$/
 export const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-export const regexPassword = /^(?!.*\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d\W_]{8,}$/
+export const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s]{8,}$/

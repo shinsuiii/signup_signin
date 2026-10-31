@@ -5,16 +5,19 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from database.signup import get_user, generate_user
 
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-UsernameStr = Annotated[str, Field(pattern=r"^[A-Za-z\d@$!%*?&]{3,30}$")]
-PasswordStr = Annotated[str, Field(pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$")]
+UsernameStr = Annotated[str, Field(pattern=r"^[a-zA-Z][a-zA-Z0-9_]{2,29}$")]
+PasswordStr = Annotated[str, Field(pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s]{8,}$")]
+
 
 @app.get("/")
 def index(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
+
 
 # Create Account
 class SignUp(BaseModel):
@@ -29,3 +32,10 @@ def check_user_exists(identifier: UsernameStr):
 @app.post("/signup/users")
 def create_user(user_info: SignUp):
     return generate_user(user_info)
+
+
+# Login Account
+class SignIn(BaseModel):
+    identifier: UsernameStr | EmailStr
+    password: PasswordStr
+
