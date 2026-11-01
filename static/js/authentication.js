@@ -7,7 +7,7 @@ import {
 } from './variables.js'
 
 
-const BASE_URL = 'http://127.0.0.1:8000'
+const BASE_URL = ''
 
 // Create User
 export async function createAccount(event) {
@@ -61,11 +61,9 @@ async function checkAccExists(identifier) {
 
     if (response.status === 422) {
         alert('Check account failed, ensure proper credentials are met.')
-        return
     }
     if (!response.ok) {
         throw new Error(`Check account failed: ${response.status}`)
-        return
     }
     
     return await response.json()
@@ -80,11 +78,9 @@ async function createUser(userInfo) {
 
     if (response.status === 422) {
         alert('Create account failed, ensure proper credentials are met.')
-        return
     }
     if (!response.ok) {
         throw new Error(`Create account failed: ${response.status}`)
-        return
     }
     
     return await response.json()
