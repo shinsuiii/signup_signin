@@ -62,13 +62,13 @@ export function fieldCheck(fieldType, value) {
 
 async function checkAccExists(identifier) {
     const params = new URLSearchParams({identifier})
-    const response = await fetch(`${BASE_URL}/users?${params.toString()}`)
+    const response = await fetch(`${BASE_URL}/signup/users?${params.toString()}`)
 
     if (response.status === 422) {
         alert('Check account failed, ensure proper credentials are met.')
     }
     if (!response.ok) {
-        throw new Error('Check account failed: ${response.status}')
+        throw new Error(`Check account failed: ${response.status}`)
     }
 
     return await response.json()
@@ -85,7 +85,7 @@ async function createUser(userInfo) {
         alert('Create account failed, ensure proper credentials are met.')
     }
     if (!response.ok) {
-        throw new Error('Create account failed: ${response.status}')
+        throw new Error(`Create account failed: ${response.status}`)
     }
 
     return await response.json()
@@ -98,24 +98,16 @@ export async function loginAccount(event) {
     submitLoginAcc.disabled = true
 
     try {
-        if (!(loginIdentifier.value || loginPassword.value)) {
+        if (!loginIdentifier.value || !loginPassword.value) {
             alert('Empty fields; please fill up your credentials.')
             return
         }
-        
-        const [userExists, emailExists] = await Promise.all([
-            checkAccExists(createUsername.value),
-            checkAccExists(createEmail.value)
-        ])
-        if (!userExists || !emailExists) {
-            alert(userExists ? 'USERNAME DOES NOT EXIST.' : 'EMAIL IS NOT REGISTERED.')
-            return
-        }
-        
-        await loginUser({
+                
+        const result = await loginUser({
             identifier: loginIdentifier.value,
             password: loginPassword.value
         })
+        if (!result) return
         
         alert('ACCOUNT LOGIN SUCCESSFUL!')
         loginForm.classList.add('hidden')
@@ -134,12 +126,18 @@ async function loginUser(userInfo) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(userInfo)
     })
+
+    if (response.status === 401) {
+        alert('Invalid credentials, please try again.')
+        return null
+    }
     
     if (response.status === 422) {
         alert('Login account failed, ensure proper credentials are met.')
+        return null
     }
     if (!response.ok) {
-        throw new Error('Login account failed: ${response.status}')
+        throw new Error(`Login account failed: ${response.status}`)
     }
 
     return await response.json()

@@ -1,12 +1,12 @@
 import {
     createForm, loginForm,
     createButton, loginButton,
-    createPassword, createPasswordConfirm, loginIdentifier, loginPassword,
+    createPassword, createPasswordConfirm,
     createPasswordConfirmWarning,
 } from './variables.js'
 
 import { 
-    createAccount,
+    createAccount, loginAccount,
     fieldCheck,
 } from './authentication.js'
 
@@ -44,6 +44,6 @@ export function interactions() {
     })
 
     createForm.addEventListener('submit', createAccount)
-    // loginForm.addEventListener('submit', loginAccount)
+    loginForm.addEventListener('submit', loginAccount)
 }
 

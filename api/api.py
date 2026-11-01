@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from database.signup import get_user, generate_user
+from database.signin import signin_user
 
 
 app = FastAPI()
@@ -42,5 +43,12 @@ def create_user(user_info: SignUp):
 # Login Account
 class SignIn(BaseModel):
     model_config = ConfigDict(regex_engine="python-re")
-    identifier: str
+    identifier: UsernameStr | EmailStr
     password: PasswordStr
+
+@app.post("/login/users", status_code=200)
+def login_user(user_info: SignIn):
+    try:
+        return signin_user(user_info)
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid credentials, please try again.")

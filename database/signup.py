@@ -12,7 +12,7 @@ connection_params: str = f"""
     port=5432
 """
 
-def get_user(identifier: str) -> bool:
+def get_user(identifier) -> bool:
     with psycopg.connect(connection_params, autocommit=True) as connection:
         with connection.cursor() as cursor:
             if "@" in identifier:
