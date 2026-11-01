@@ -15,12 +15,17 @@ export async function createAccount(event) {
     submitCreateAcc.disabled = true
 
     try {
-        // Checks if any warnings are present in the DOM
-        const warnings = [createUsernameWarning, createEmailWarning, createPasswordWarning, createPasswordConfirmWarning]
-        const hasWarning = warnings.some(warning => !warning.classList.contains('hidden'))
-        if (hasWarning) return
+        // Ensures fields are correctly filled.
+        const validUser = fieldCheck('text', createUsername.value)
+        const validEmail = fieldCheck('email', createEmail.value)
+        const validPass = fieldCheck('password', createPassword.value)
+        const passMatches = createPassword.value === createPasswordConfirm.value
+        createUsernameWarning.classList.toggle('hidden', validUser)
+        createEmailWarning.classList.toggle('hidden', validEmail)
+        createPasswordWarning.classList.toggle('hidden', validPass)
+        createPasswordConfirmWarning.classList.toggle('hidden', passMatches)
+        if (!(validUser && validEmail && validPass && passMatches)) return
         
-        // Checks if user exists in database
         const [userExists, emailExists] = await Promise.all([
             checkAccExists(createUsername.value),
             checkAccExists(createEmail.value)
@@ -57,15 +62,15 @@ export function fieldCheck(fieldType, value) {
 
 async function checkAccExists(identifier) {
     const params = new URLSearchParams({identifier})
-    const response = await fetch(`${BASE_URL}/signup/users?${params.toString()}`)
+    const response = await fetch(`${BASE_URL}/users?${params.toString()}`)
 
     if (response.status === 422) {
         alert('Check account failed, ensure proper credentials are met.')
     }
     if (!response.ok) {
-        throw new Error(`Check account failed: ${response.status}`)
+        throw new Error('Check account failed: ${response.status}')
     }
-    
+
     return await response.json()
 }
 
@@ -80,9 +85,9 @@ async function createUser(userInfo) {
         alert('Create account failed, ensure proper credentials are met.')
     }
     if (!response.ok) {
-        throw new Error(`Create account failed: ${response.status}`)
+        throw new Error('Create account failed: ${response.status}')
     }
-    
+
     return await response.json()
 }
 
@@ -93,12 +98,49 @@ export async function loginAccount(event) {
     submitLoginAcc.disabled = true
 
     try {
+        if (!(loginIdentifier.value || loginPassword.value)) {
+            alert('Empty fields; please fill up your credentials.')
+            return
+        }
         
-
+        const [userExists, emailExists] = await Promise.all([
+            checkAccExists(createUsername.value),
+            checkAccExists(createEmail.value)
+        ])
+        if (!userExists || !emailExists) {
+            alert(userExists ? 'USERNAME DOES NOT EXIST.' : 'EMAIL IS NOT REGISTERED.')
+            return
+        }
+        
+        await loginUser({
+            identifier: loginIdentifier.value,
+            password: loginPassword.value
+        })
+        
+        alert('ACCOUNT LOGIN SUCCESSFUL!')
+        loginForm.classList.add('hidden')
+        loginForm.reset()
     } catch(error) {
         console.error(error)
         alert('Something went wrong. Please try again.')
     } finally {
         submitLoginAcc.disabled = false
     }
+}
+
+async function loginUser(userInfo) {
+    const response = await fetch(`${BASE_URL}/login/users`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(userInfo)
+    })
+    
+    if (response.status === 422) {
+        alert('Login account failed, ensure proper credentials are met.')
+    }
+    if (!response.ok) {
+        throw new Error('Login account failed: ${response.status}')
+    }
+
+    return await response.json()
 }
