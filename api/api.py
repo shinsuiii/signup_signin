@@ -28,11 +28,11 @@ class SignUp(BaseModel):
     email: EmailStr
     password: PasswordStr
 
-@app.get("/signup/users")
+@app.get("/users/signup")
 def check_user_exists(identifier: UsernameStr | EmailStr):
     return get_user(identifier)
 
-@app.post("/signup/users", status_code=201)
+@app.post("/users/signup", status_code=201)
 def create_user(user_info: SignUp):
     try:
         return generate_user(user_info)
@@ -46,7 +46,7 @@ class SignIn(BaseModel):
     identifier: UsernameStr | EmailStr
     password: PasswordStr
 
-@app.post("/login/users", status_code=200)
+@app.post("/users/signin", status_code=200)
 def login_user(user_info: SignIn):
     try:
         return signin_user(user_info)

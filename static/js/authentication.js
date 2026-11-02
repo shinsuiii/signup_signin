@@ -62,7 +62,7 @@ export function fieldCheck(fieldType, value) {
 
 async function checkAccExists(identifier) {
     const params = new URLSearchParams({identifier})
-    const response = await fetch(`${BASE_URL}/signup/users?${params.toString()}`)
+    const response = await fetch(`${BASE_URL}/users/signup?${params.toString()}`)
 
     if (response.status === 422) {
         alert('Check account failed, ensure proper credentials are met.')
@@ -75,7 +75,7 @@ async function checkAccExists(identifier) {
 }
 
 async function createUser(userInfo) {
-    const response = await fetch(`${BASE_URL}/signup/users`, {
+    const response = await fetch(`${BASE_URL}/users/signup`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(userInfo)
@@ -121,7 +121,7 @@ export async function loginAccount(event) {
 }
 
 async function loginUser(userInfo) {
-    const response = await fetch(`${BASE_URL}/login/users`, {
+    const response = await fetch(`${BASE_URL}/users/signin`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(userInfo)
