@@ -2,8 +2,9 @@ import jwt
 import os
 import bcrypt
 import psycopg
-from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
+from datetime import datetime, timedelta, timezone
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 
 load_dotenv()
 connection_params: str = f"""
@@ -36,8 +37,6 @@ def verify_password(identifier: str, plain_pass: str) -> bool:
 def generate_jwt(identifier: str) -> str:
     with psycopg.connect(connection_params, autocommit=True) as connection:
         with connection.cursor() as cursor:
-            # https://www.google.com/search?q=python+jwt+encode+and+decode&oq=python+jwt+encode+and+dec&gs_lcrp=EgZjaHJvbWUqCAgBEAAYFhgeMgYIABBFGDkyCAgBEAAYFhgeMggIAhAAGBYYHjIICAMQABgWGB4yCAgEEAAYFhgeMgcIBRAAGO8FMgcIBhAAGO8FMgcIBxAAGO8F0gEINjg1M2owajeoAgCwAgA&sourceid=chrome&source=chrome.ob&ie=UTF-8
-
             if "@" in identifier:
                 cursor.execute('SELECT * FROM users WHERE email = %(identifier)s', {"identifier": identifier.lower()})
                 user_info: tuple = cursor.fetchone()
@@ -48,21 +47,25 @@ def generate_jwt(identifier: str) -> str:
             payload: dict = {
                 "id": user_info[0],
                 "iat": datetime.now(timezone.utc),
-                "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+                "exp": datetime.now(timezone.utc) + timedelta(minutes=15),
                 "name": user_info[1],
                 "email": user_info[2],
             }
 
             return jwt.encode(payload, JWT_KEY, algorithm=ALGORITHM)
 
-def verify_jwt(token: str) -> bool:
-
-    return
-
-def signin_user(user_info) -> bool:
-    identifier: str = user_info.identifier
-    password: str = user_info.password
-    if verify_password(identifier, password):
-        print("WOW")
+def signin_user(user_info) -> str | bool:
+    if verify_password(user_info.identifier, user_info.password):
+        return generate_jwt(user_info.identifier)
     else:
         return False
+
+def verify_jwt(token: str) -> dict | None:
+    try:
+        return jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
+    except ExpiredSignatureError:
+        print("Token has expired.")
+        return None
+    except InvalidTokenError as error:
+        print(f"Invalid token signature ({error}).")
+        return None
