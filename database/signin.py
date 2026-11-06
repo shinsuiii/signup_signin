@@ -16,15 +16,18 @@ connection_params: str = f"""
 """
 ACCESS_KEY: str = os.getenv("ACCESS_TOKEN_SECRET")
 REFRESH_KEY: str = os.getenv("REFRESH_TOKEN_SECRET")
+
+ACCESS_TOKEN_AGE: int = 15 # Minutes
+REFRESH_TOKEN_AGE: int = 7 # Days
+
 ALGORITHM: str = "HS256"
 
 def verify_password(identifier: str, plain_pass: str) -> bool:
     with psycopg.connect(connection_params, autocommit=True) as connection:
             with connection.cursor() as cursor:
                 column: str = "email" if "@" in identifier else "username"
-                value: str = identifier.lower() if "@" in identifier else identifier
                 try:
-                    cursor.execute(f"SELECT password_hash FROM users WHERE {column} = %(value)s", {"value": value})
+                    cursor.execute(f"SELECT password_hash FROM users WHERE {column} = %(value)s", {"value": identifier})
                     stored_pass: str = cursor.fetchone()
                 except TypeError:
                     return False
@@ -38,21 +41,20 @@ def generate_jwt(identifier: str) -> str:
     with psycopg.connect(connection_params, autocommit=True) as connection:
         with connection.cursor() as cursor:
             column: str = "email" if "@" in identifier else "username"
-            value: str = identifier.lower() if "@" in identifier else identifier
 
-            cursor.execute(f"SELECT * FROM users WHERE {column} = %(value)s", {"value": value})
+            cursor.execute(f"SELECT * FROM users WHERE {column} = %(value)s", {"value": identifier})
             row: tuple = cursor.fetchone()
             payload: dict = {
                 "id": row[0],
                 "iat": datetime.now(timezone.utc),
-                "exp": datetime.now(timezone.utc) + timedelta(minutes=15),
+                "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_AGE),
                 "name": row[1],
                 "email": row[2],
             }
 
             return jwt.encode(payload, ACCESS_KEY, algorithm=ALGORITHM)
 
-def signin_user(user_info) -> str | bool:
+def signin_user(user_info) -> str:
     if not verify_password(user_info.identifier, user_info.password):
         raise ValueError("Invalid credentials, please try again.")
     return generate_jwt(user_info.identifier)

@@ -36,9 +36,9 @@ export async function createAccount(event) {
         }
 
         await createUser({
-                username: createUsername.value,
-                email: createEmail.value,
-                password: createPassword.value,
+                username: createUsername.value.trim(),
+                email: createEmail.value.trim().toLowerCase(),
+                password: createPassword.value.trim(),
             })
 
         alert('ACCOUNT CREATED SUCCESSFULLY!')
@@ -104,10 +104,13 @@ export async function loginAccount(event) {
         }
                 
         const result = await loginUser({
-            identifier: loginIdentifier.value,
-            password: loginPassword.value
+            identifier: loginIdentifier.value.includes('@') ? loginIdentifier.value.trim().toLowerCase() : loginIdentifier.value.trim(),
+            password: loginPassword.value.trim()
         })
         if (!result) return
+
+        const jwtToken = result.token
+        localStorage.setItem('accessToken', jwtToken)
         
         alert('ACCOUNT LOGIN SUCCESSFUL!')
         loginForm.classList.add('hidden')
@@ -142,3 +145,4 @@ async function loginUser(userInfo) {
 
     return await response.json()
 }
+

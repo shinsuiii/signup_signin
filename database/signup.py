@@ -16,8 +16,7 @@ def get_user(identifier) -> bool:
     with psycopg.connect(connection_params, autocommit=True) as connection:
         with connection.cursor() as cursor:
             column: str = "email" if "@" in identifier else "username"
-            value: str = identifier.lower() if "@" in identifier else identifier
-            cursor.execute(f"SELECT EXISTS(SELECT 1 FROM users WHERE {column} = %(value)s);", {"value": value})
+            cursor.execute(f"SELECT EXISTS(SELECT 1 FROM users WHERE {column} = %(value)s);", {"value": identifier})
             return cursor.fetchone()[0]
 
 def generate_pass_hash(password_string: str) -> str :
@@ -30,7 +29,7 @@ def generate_user(user_info) -> bool:
         with connection.cursor() as cursor:
             user: dict = {
                     "username": user_info.username,
-                    "email": user_info.email.lower(),
+                    "email": user_info.email,
                     "password_hash":  generate_pass_hash(user_info.password)
             }
             cursor.execute("INSERT INTO users (username, email, password_hash) VALUES (%(username)s, %(email)s, %(password_hash)s);", user)
