@@ -1,11 +1,11 @@
 import psycopg.errors
 from typing import Annotated
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
-from fastapi import FastAPI, Request, HTTPException
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
+from fastapi import FastAPI, Request, HTTPException, Response, Depends, Cookie
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from database.signup import get_user, generate_user
-from database.signin import signin_user
+from database.signin import signin_user, verify_jwt, ACCESS_TOKEN_AGE, REFRESH_TOKEN_AGE
 
 
 app = FastAPI()
@@ -16,17 +16,20 @@ UsernameStr = Annotated[str, Field(pattern=r"^[a-zA-Z][a-zA-Z0-9_]{2,29}$")]
 PasswordStr = Annotated[str, Field(pattern=r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s]{8,64}$")]
 
 
-@app.get("/")
-def index(request: Request):
-    return templates.TemplateResponse(request=request, name="index.html")
-
-
-# Create Account
 class SignUp(BaseModel):
     model_config = ConfigDict(regex_engine="python-re")
     username: UsernameStr
     email: EmailStr
     password: PasswordStr
+
+class SignIn(BaseModel):
+    model_config = ConfigDict(regex_engine="python-re")
+    identifier: UsernameStr | EmailStr
+    password: PasswordStr
+
+@app.get("/")
+def index(request: Request):
+    return templates.TemplateResponse(request=request, name="index.html")
 
 @app.get("/users/signup")
 def check_user_exists(identifier: UsernameStr | EmailStr):
@@ -39,16 +42,19 @@ def create_user(user_info: SignUp):
     except psycopg.errors.UniqueViolation:
         raise HTTPException(status_code=409, detail="Username or email already exists.")
 
-
-# Login Account
-class SignIn(BaseModel):
-    model_config = ConfigDict(regex_engine="python-re")
-    identifier: UsernameStr | EmailStr
-    password: PasswordStr
-
 @app.post("/users/signin", status_code=200)
-def login_user(user_info: SignIn):
+def login_user(user_info: SignIn, response: Response):
     try:
-        return signin_user(user_info)
+        token: str = signin_user(user_info)
     except ValueError:
         raise HTTPException(status_code=401, detail="Invalid credentials, please try again.")
+
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        max_age=ACCESS_TOKEN_AGE * 60,
+        httponly=True,
+        samesite="lax",
+        path="/",
+    )
+    return {"message": "Logged in"}
