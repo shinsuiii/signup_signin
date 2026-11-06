@@ -14,55 +14,52 @@ connection_params: str = f"""
     host=localhost
     port=5432
 """
-JWT_KEY: str = os.getenv('SECRET_KEY')
+ACCESS_KEY: str = os.getenv("ACCESS_TOKEN_SECRET")
+REFRESH_KEY: str = os.getenv("REFRESH_TOKEN_SECRET")
 ALGORITHM: str = "HS256"
 
 def verify_password(identifier: str, plain_pass: str) -> bool:
     with psycopg.connect(connection_params, autocommit=True) as connection:
             with connection.cursor() as cursor:
-                if "@" in identifier:
-                    cursor.execute('SELECT password_hash FROM users WHERE email = %(identifier)s', {"identifier": identifier.lower()})
-                    stored_pass: str = cursor.fetchone()[0]
-                else:
-                    cursor.execute('SELECT password_hash FROM users WHERE username = %(identifier)s', {"identifier": identifier})
-                    stored_pass: str = cursor.fetchone()[0]
-                
-                if not stored_pass:
+                column: str = "email" if "@" in identifier else "username"
+                value: str = identifier.lower() if "@" in identifier else identifier
+                try:
+                    cursor.execute(f"SELECT password_hash FROM users WHERE {column} = %(value)s", {"value": value})
+                    stored_pass: str = cursor.fetchone()
+                except TypeError:
+                    return False
+
+                if stored_pass is None:
                     raise ValueError('Invalid credentials, please try again.')
 
-                plain_bytes: bytes = plain_pass.encode("utf-8")
-                hashed_bytes: bytes = stored_pass.encode("utf-8")
-                return bcrypt.checkpw(plain_bytes, hashed_bytes)
+                return bcrypt.checkpw(plain_pass.encode("utf-8"), stored_pass[0].encode("utf-8"))
 
 def generate_jwt(identifier: str) -> str:
     with psycopg.connect(connection_params, autocommit=True) as connection:
         with connection.cursor() as cursor:
-            if "@" in identifier:
-                cursor.execute('SELECT * FROM users WHERE email = %(identifier)s', {"identifier": identifier.lower()})
-                user_info: tuple = cursor.fetchone()
-            else:
-                cursor.execute('SELECT * FROM users WHERE username = %(identifier)s', {"identifier": identifier})
-                user_info: tuple = cursor.fetchone()
+            column: str = "email" if "@" in identifier else "username"
+            value: str = identifier.lower() if "@" in identifier else identifier
 
+            cursor.execute(f"SELECT * FROM users WHERE {column} = %(value)s", {"value": value})
+            row: tuple = cursor.fetchone()
             payload: dict = {
-                "id": user_info[0],
+                "id": row[0],
                 "iat": datetime.now(timezone.utc),
                 "exp": datetime.now(timezone.utc) + timedelta(minutes=15),
-                "name": user_info[1],
-                "email": user_info[2],
+                "name": row[1],
+                "email": row[2],
             }
 
-            return jwt.encode(payload, JWT_KEY, algorithm=ALGORITHM)
+            return jwt.encode(payload, ACCESS_KEY, algorithm=ALGORITHM)
 
 def signin_user(user_info) -> str | bool:
-    if verify_password(user_info.identifier, user_info.password):
-        return generate_jwt(user_info.identifier)
-    else:
-        return False
+    if not verify_password(user_info.identifier, user_info.password):
+        raise ValueError("Invalid credentials, please try again.")
+    return generate_jwt(user_info.identifier)
 
 def verify_jwt(token: str) -> dict | None:
     try:
-        return jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
+        return jwt.decode(token, ACCESS_KEY, algorithms=[ALGORITHM])
     except ExpiredSignatureError:
         print("Token has expired.")
         return None

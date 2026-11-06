@@ -15,12 +15,10 @@ connection_params: str = f"""
 def get_user(identifier) -> bool:
     with psycopg.connect(connection_params, autocommit=True) as connection:
         with connection.cursor() as cursor:
-            if "@" in identifier:
-                cursor.execute('SELECT EXISTS (SELECT 1 FROM users WHERE email = %(identifier)s);', {"identifier": identifier.lower()})
-                return cursor.fetchone()[0]
-            else:
-                cursor.execute('SELECT EXISTS (SELECT 1 FROM users WHERE username = %(identifier)s);', {"identifier": identifier})
-                return cursor.fetchone()[0]
+            column: str = "email" if "@" in identifier else "username"
+            value: str = identifier.lower() if "@" in identifier else identifier
+            cursor.execute(f"SELECT EXISTS(SELECT 1 FROM users WHERE {column} = %(value)s);", {"value": value})
+            return cursor.fetchone()[0]
 
 def generate_pass_hash(password_string: str) -> str :
     password = password_string.encode("utf-8")
@@ -30,11 +28,10 @@ def generate_pass_hash(password_string: str) -> str :
 def generate_user(user_info) -> bool:
     with psycopg.connect(connection_params, autocommit=True) as connection:
         with connection.cursor() as cursor:
-            encoded_email: str = user_info.email
             user: dict = {
                     "username": user_info.username,
-                    "email": encoded_email.lower(),
+                    "email": user_info.email.lower(),
                     "password_hash":  generate_pass_hash(user_info.password)
             }
-            cursor.execute('INSERT INTO users (username, email, password_hash) VALUES (%(username)s, %(email)s, %(password_hash)s);', user)
+            cursor.execute("INSERT INTO users (username, email, password_hash) VALUES (%(username)s, %(email)s, %(password_hash)s);", user)
             return True
