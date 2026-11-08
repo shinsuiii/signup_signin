@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+{% block content %}
+    <h1>Welcome, {{ user.name }}</h1>
+    <h3>Here are some details regarding yourself:</h3>
+    <p>Account ID: {{ user.id }}</p>
+    <p>Username: {{ user.name }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>Token Issued At: {{ user.iat }}</p>
+    <p>Token Expiring At: {{ user.exp }}</p>
+{% endblock %}
