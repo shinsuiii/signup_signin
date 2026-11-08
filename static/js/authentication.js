@@ -108,13 +108,14 @@ export async function loginAccount(event) {
             password: loginPassword.value.trim()
         })
         if (!result) return
-
-        const jwtToken = result.token
-        localStorage.setItem('accessToken', jwtToken)
         
         alert('ACCOUNT LOGIN SUCCESSFUL!')
         loginForm.classList.add('hidden')
         loginForm.reset()
+
+        if (result.status_code=== 200) {
+            userDashboard()
+        }
     } catch(error) {
         console.error(error)
         alert('Something went wrong. Please try again.')
@@ -146,3 +147,9 @@ async function loginUser(userInfo) {
     return await response.json()
 }
 
+
+async function userDashboard() {
+    const response = await fetch(`${BASE_URL}/users/dashboard`)
+    if (response.ok) window.location.href = '/users/dashboard'
+    else throw new Error(`Check account failed: ${response.status}`)
+}
