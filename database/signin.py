@@ -15,11 +15,7 @@ connection_params: str = f"""
     port=5432
 """
 ACCESS_KEY: str = os.getenv("ACCESS_TOKEN_SECRET")
-REFRESH_KEY: str = os.getenv("REFRESH_TOKEN_SECRET")
-
 ACCESS_TOKEN_AGE: int = 15 # Minutes
-REFRESH_TOKEN_AGE: int = 7 # Days
-
 ALGORITHM: str = "HS256"
 
 def verify_password(identifier: str, plain_pass: str) -> bool:
