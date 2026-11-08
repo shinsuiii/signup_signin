@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, HTTPException, Response, Depends, Cookie
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from database.signup import get_user, generate_user
-from database.signin import signin_user, verify_jwt, ACCESS_TOKEN_AGE, REFRESH_TOKEN_AGE
+from database.signin import signin_user, verify_jwt, ACCESS_TOKEN_AGE
 
 
 app = FastAPI()
@@ -31,6 +31,7 @@ class SignIn(BaseModel):
 def index(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
+
 @app.get("/users/signup")
 def check_user_exists(identifier: UsernameStr | EmailStr):
     return get_user(identifier)
@@ -41,6 +42,7 @@ def create_user(user_info: SignUp):
         return generate_user(user_info)
     except psycopg.errors.UniqueViolation:
         raise HTTPException(status_code=409, detail="Username or email already exists.")
+
 
 @app.post("/users/signin", status_code=200)
 def login_user(user_info: SignIn, response: Response):
@@ -57,4 +59,24 @@ def login_user(user_info: SignIn, response: Response):
         samesite="lax",
         path="/",
     )
-    return {"message": "Logged in"}
+    return {"message": "Logged in", "status_code": 200}
+
+
+def get_current_user(access_token: Annotated[str | None, Cookie()] = None) -> dict | None:
+    if access_token is None:
+        raise HTTPException(status_code=401, detail="User not authenticated.")
+    payload: dict | None = verify_jwt(access_token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid or expired token.")
+    return payload
+
+@app.get("/users/dashboard", status_code=200)
+def dashboard(request: Request, user: Annotated[dict, Depends(get_current_user)]):
+    if user is None:
+        raise HTTPException(status_code=401, detail="User no longer exists.")
+    # user_info: dict = {"id": user["id"], "name": user["name"], "email": user["email"], "iat": user["iat"], "exp": user["exp"]}
+    return templates.TemplateResponse(
+        request=request,
+        name="dashboard.html",
+        context={"user": user}
+    )
