@@ -1,6 +1,12 @@
 *, *::before, *::after {
     box-sizing: border-box;
 }
+:root {
+    --ink: currentColor;
+    --ink-2: #FF4FD8;
+    --ink-3: #4FF8FF;
+    --primary-text: #c9d1d9;
+}
 *:not(dialog) {
     margin: 0;
 }
@@ -22,6 +28,7 @@ input, button, textarea, select {
 }
 p, h1, h2, h3, h4, h5, h6 {
     overflow-wrap: break-word;
+    color: var(--primary-text);
 }
 p {
     text-wrap: pretty;
@@ -31,4 +38,61 @@ h1, h2, h3, h4, h5, h6 {
 }
 html {
     height: 100vh;
+}
+
+
+.textGroup {
+    margin: 3rem 0 0 3rem;
+}
+
+.welcomeMessage {
+    display: flex;
+    margin-bottom: 2rem;
+}
+
+.welcomeMessage h1 {
+    font-size: 5rem;
+}
+
+/* User Text */
+.welcomeMessage .fx-ember {
+    font: 600 5rem "JetBrains Mono", monospace;
+    letter-spacing: .1em;
+    color: #ffd9a0;
+    margin-left: 1rem;
+    animation: fx-ember 1.7s ease-in-out infinite alternate;
+}
+@keyframes fx-ember {
+    0% {
+    text-shadow:
+        0 -2px 6px  #ffab40,
+        0 -6px 14px #ff6d00,
+        0 -12px 28px #dd2c00,
+        0 -20px 44px rgba(213, 0, 0, .55);
+    }
+    100% {
+    text-shadow:
+        0 -3px 8px  #ffc46b,
+        0 -9px 20px #ff8f1f,
+        0 -18px 38px #ff3d00,
+        0 -30px 60px rgba(213, 0, 0, .8);
+    }
+}
+
+.textGroup p {
+    margin-left: 5rem;
+    font-size: 1.3rem;
+}
+.textGroup .userDetails {
+    margin-top: 1.5rem;
+    margin-left: 10rem;
+    color: var(--primary-text);
+    border-collapse: collapse;
+}
+.textGroup th, td {
+    border-bottom: 2px solid var(--primary-text);
+    padding: 0.5rem 2rem;
+}
+.textGroup .headerCategory {
+    border-right: 2px solid var(--primary-text);
 }

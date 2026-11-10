@@ -1,13 +1,54 @@
 {% extends "base.html" %}
-
-{% block title %} Dashboard {% endblock %}
+{% block extraCss %} <link rel="stylesheet" href="../static/css/profile.css"> {% endblock %} 
+{% block title %} Profile {% endblock %}
+{% block navUsername %} {{ user.name }} {% endblock %}
 
 {% block content %}
-    <h1>Welcome, {{ user.name }}</h1>
-    <h3>Here are some details regarding yourself:</h3>
-    <p>Account ID: {{ user.id }}</p>
-    <p>Username: {{ user.name }}</p>
-    <p>Email: {{ user.email }}</p>
-    <p>Token Issued At: {{ user.iat }}</p>
-    <p>Token Expiring At: {{ user.exp }}</p>
+<div class="textGroup">
+    <div class="welcomeMessage">
+        <h1>Welcome, </h1>
+        <div class="fx-ember">{{ user.name }}</div>
+    </div>
+    <p>Here are some details regarding yourself:</p>
+
+    <!-- <table class="userDetails">
+        <tr>
+            <th>Account ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Token Issued At</th>
+            <th>Token Expiring At</th>
+        </tr>
+        <tr>
+            <th>{{ user.id }}</th>
+            <th>{{ user.name }}</th>
+            <th>{{ user.email }}</th>
+            <th>{{ user.iat }}</th>
+            <th>{{ user.exp }}</th>
+        </tr>
+    </table> -->
+
+    <table class="userDetails">
+        <tr>
+            <th class="headerCategory">Account ID</th>
+            <th>{{ user.id }}</th>
+        </tr>
+        <tr>
+            <th class="headerCategory">Username</th>
+            <th>{{ user.name }}</th>
+        </tr>
+        <tr>
+            <th class="headerCategory">Email</th>
+            <th>{{ user.email }}</th>
+        </tr>
+        <tr>
+            <th class="headerCategory">Token Issued At</th>
+            <th>{{ user.iat }}</th>
+        </tr>
+        <tr>
+            <th class="headerCategory">Token Expiration At</th>
+            <th>{{ user.exp }}</th>
+        </tr>
+    </table>
+</div>
 {% endblock %}

@@ -4,18 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/base.css">
-    <!-- <script type="module" src="../static/js/main.js"></script> -->
+    {% block extraCss %} {% endblock %}
+    <script type="module" src="../static/js/main.js"></script>
     <title>{% block title %} Signup-Signin {% endblock %} </title>
 </head>
 <body>
     <header>
-        {% block navigation_bar %} {% endblock %}
+        <nav>
+            <div class="leftNav">
+                <div class="circle"></div>
+                <p class="username">{% block navUsername %} username {% endblock %}</p>
+            </div>
+            <div class="rightNav">
+                <button type="button" id="logoutBtn">Logout</button>
+            </div>
+        </nav>
     </header>
     <main>
         {% block content %} {% endblock %}
     </main>
-    <footer>
-        <p>@ 2026 My Login System | All Rights Reserved</p>
-    </footer>
 </body>
 </html>
