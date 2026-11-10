@@ -114,7 +114,7 @@ export async function loginAccount(event) {
         loginForm.reset()
 
         if (result.status_code=== 200) {
-            userDashboard()
+            userProfile()
         }
     } catch(error) {
         console.error(error)
@@ -148,8 +148,8 @@ async function loginUser(userInfo) {
 }
 
 
-async function userDashboard() {
-    const response = await fetch(`${BASE_URL}/users/dashboard`)
-    if (response.ok) window.location.href = '/users/dashboard'
+async function userProfile() {
+    const response = await fetch(`${BASE_URL}/users/profile`)
+    if (response.ok) window.location.href = '/users/profile'
     else throw new Error(`Check account failed: ${response.status}`)
 }

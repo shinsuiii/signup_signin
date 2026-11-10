@@ -70,11 +70,11 @@ def get_current_user(access_token: Annotated[str | None, Cookie()] = None) -> di
         raise HTTPException(status_code=401, detail="Invalid or expired token.")
     return payload
 
-@app.get("/users/dashboard", status_code=200)
+@app.get("/users/profile", status_code=200)
 def dashboard(request: Request, user: Annotated[dict, Depends(get_current_user)]):
     if user is None:
         raise HTTPException(status_code=401, detail="User no longer exists.")
-    # user_info: dict = {"id": user["id"], "name": user["name"], "email": user["email"], "iat": user["iat"], "exp": user["exp"]}
+
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
