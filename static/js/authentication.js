@@ -40,8 +40,6 @@ export async function createAccount(event) {
                 email: createEmail.value.trim().toLowerCase(),
                 password: createPassword.value.trim(),
             })
-
-        alert('ACCOUNT CREATED SUCCESSFULLY!')
         createForm.classList.add('hidden')
         createForm.reset()
     } catch (error) {
@@ -109,7 +107,6 @@ export async function loginAccount(event) {
         })
         if (!result) return
         
-        alert('ACCOUNT LOGIN SUCCESSFUL!')
         loginForm.classList.add('hidden')
         loginForm.reset()
 
@@ -159,7 +156,6 @@ export async function logoutAccount() {
         headers: {'Content-Type': 'application/json'},
     })
     if (response.status === 204) window.location.href = '/'
-    
     if (!response.ok) {
         throw new Error(`Account logout failed: ${response.status}`)
     }
