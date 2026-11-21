@@ -3,22 +3,24 @@ import {
     createButton, loginButton,
     createPassword, createPasswordConfirm,
     createPasswordConfirmWarning,
+    logoutBtn,
 } from './variables.js'
 
 import { 
     createAccount, loginAccount,
     fieldCheck,
+    logoutAccount,
 } from './authentication.js'
 
 export function interactions() {
     // Open forms buttons
-    createButton.addEventListener('click', () => {
+    createButton?.addEventListener('click', () => {
         if (createForm.classList.contains("hidden")) {
             createForm.classList.remove("hidden")
             loginForm.classList.add("hidden")
         } else createForm.classList.add("hidden")
     })
-    loginButton.addEventListener('click', () => {
+    loginButton?.addEventListener('click', () => {
         if (loginForm.classList.contains("hidden")) {
             loginForm.classList.remove("hidden")
             createForm.classList.add("hidden")
@@ -26,7 +28,7 @@ export function interactions() {
     })
 
     // Create user fields client-side validation
-    createForm.querySelectorAll('input:not(.ignore)').forEach(createField => {
+    createForm?.querySelectorAll('input:not(.ignore)').forEach(createField => {
         const warning = document.getElementById(`${createField.id}Warning`)
 
         createField.addEventListener('blur', () => {
@@ -38,12 +40,14 @@ export function interactions() {
             }
         })
     })
-    createPasswordConfirm.addEventListener('blur', () => {
+    createPasswordConfirm?.addEventListener('blur', () => {
         const matchingPassword = createPassword.value === createPasswordConfirm.value ? true : false
         createPasswordConfirmWarning.classList.toggle('hidden', matchingPassword)
     })
 
-    createForm.addEventListener('submit', createAccount)
-    loginForm.addEventListener('submit', loginAccount)
+    createForm?.addEventListener('submit', createAccount)
+    loginForm?.addEventListener('submit', loginAccount)
+
+    logoutBtn?.addEventListener('click', logoutAccount)
 }
 

@@ -143,13 +143,24 @@ async function loginUser(userInfo) {
     if (!response.ok) {
         throw new Error(`Login account failed: ${response.status}`)
     }
-
+    
     return await response.json()
 }
-
 
 async function userProfile() {
     const response = await fetch(`${BASE_URL}/users/profile`)
     if (response.ok) window.location.href = '/users/profile'
     else throw new Error(`Check account failed: ${response.status}`)
+}
+
+export async function logoutAccount() {
+    const response = await fetch(`${BASE_URL}/users/signout`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+    })
+    if (response.status === 204) window.location.href = '/'
+    
+    if (!response.ok) {
+        throw new Error(`Account logout failed: ${response.status}`)
+    }
 }
