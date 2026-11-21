@@ -61,6 +61,9 @@ def login_user(user_info: SignIn, response: Response):
     )
     return {"message": "Logged in", "status_code": 200}
 
+@app.post("/users/signout", status_code=204)
+def logout_user(response: Response):
+    response.delete_cookie("access_token", path="/", httponly=True, samesite="lax")
 
 def get_current_user(access_token: Annotated[str | None, Cookie()] = None) -> dict | None:
     if access_token is None:
@@ -71,12 +74,8 @@ def get_current_user(access_token: Annotated[str | None, Cookie()] = None) -> di
     return payload
 
 @app.get("/users/profile", status_code=200)
-def dashboard(request: Request, user: Annotated[dict, Depends(get_current_user)]):
+def profile(request: Request, user: Annotated[dict, Depends(get_current_user)]):
     if user is None:
         raise HTTPException(status_code=401, detail="User no longer exists.")
 
-    return templates.TemplateResponse(
-        request=request,
-        name="dashboard.html",
-        context={"user": user}
-    )
+    return templates.TemplateResponse(request=request, name="profile.html", context={"user": user})
