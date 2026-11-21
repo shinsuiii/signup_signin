@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from fastapi import FastAPI, Request, HTTPException, Response, Depends, Cookie
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 from database.signup import get_user, generate_user
 from database.signin import signin_user, verify_jwt, ACCESS_TOKEN_AGE
 
@@ -27,8 +28,11 @@ class SignIn(BaseModel):
     identifier: UsernameStr | EmailStr
     password: PasswordStr
 
+
 @app.get("/")
-def index(request: Request):
+def index(request: Request, access_token: Annotated[str | None, Cookie()] = None):
+    if access_token and verify_jwt(access_token) is not None:
+        return RedirectResponse(url="/users/profile", status_code=307)
     return templates.TemplateResponse(request=request, name="index.html")
 
 
@@ -65,6 +69,7 @@ def login_user(user_info: SignIn, response: Response):
 def logout_user(response: Response):
     response.delete_cookie("access_token", path="/", httponly=True, samesite="lax")
 
+
 def get_current_user(access_token: Annotated[str | None, Cookie()] = None) -> dict | None:
     if access_token is None:
         raise HTTPException(status_code=401, detail="User not authenticated.")
@@ -77,5 +82,4 @@ def get_current_user(access_token: Annotated[str | None, Cookie()] = None) -> di
 def profile(request: Request, user: Annotated[dict, Depends(get_current_user)]):
     if user is None:
         raise HTTPException(status_code=401, detail="User no longer exists.")
-
     return templates.TemplateResponse(request=request, name="profile.html", context={"user": user})
